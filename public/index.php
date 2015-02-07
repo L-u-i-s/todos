@@ -7,7 +7,8 @@
 
 	# defines a route for the GET method
 	$app->get("/", function(){
-		echo "Hello World";
+		$view = require("index.html");
+		echo $view;
 	});
 
 	# Actually runs the application
