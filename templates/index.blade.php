@@ -35,7 +35,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="jumbotron">
-					<h1 class="text-center">My ToDo Web App</h1>
+					<h1 class="text-center">{{$title}}</h1>
 				</div>
 			</div>
 			<div class="row">

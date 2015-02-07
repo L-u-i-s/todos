@@ -18,7 +18,7 @@
 
 	# defines a route for the GET method
 	$app->get("/", function() use ($app){
-		$app->render('index');
+		$app->render('index', array('title' => 'This is template title variable'));
 	});
 
 	# Actually runs the application
