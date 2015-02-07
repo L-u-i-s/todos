@@ -21,5 +21,10 @@
 		$app->render('index', array('title' => 'This is template title variable'));
 	});
 
+	# defines a route for the GET method
+	$app->get("/:custom", function($custom) use ($app){
+		$app->render('index', array('title' => $custom));
+	});
+
 	# Actually runs the application
 	$app->run();
