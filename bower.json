@@ -2,6 +2,10 @@
   "name": "My Site",
   "dependencies": {
     "bootstrap": "~3.3.2",
-    "font-awesome": "~4.3.0"
+    "font-awesome": "~4.3.0",
+    "bootstrap-social": "~4.8.0"
+  },
+  "resolutions": {
+    "font-awesome": "~4.2.0"
   }
 }
