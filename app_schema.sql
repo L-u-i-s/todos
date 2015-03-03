@@ -1,0 +1,2 @@
+CREATE TABLE todos (id INTEGER PRIMARY KEY AUTOINCREMENT, task CHAR(128) NOT NULL, status INTEGER NOT NULL default 0, created_at DATETIME default current_timestamp, updated_at DATETIME default current_timestamp);
+INSERT INTO todos (id, task) VALUES (NULL, "get milk"), (NULL, "walk the dog"), (NULL, "learn MVC");
