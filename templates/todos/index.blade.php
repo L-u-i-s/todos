@@ -8,10 +8,10 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
 				@include('todos._form')
 			</div>
-			<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+			<div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
 				<div class="row">
 					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 						@include('todos._filters')
@@ -40,7 +40,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
 				@include('widgets.social', compact('todo'))
 			</div>
 		</div>
