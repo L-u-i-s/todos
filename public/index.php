@@ -22,6 +22,22 @@
 		'cache' => "../html_cache"
 	];
 
+	# defines a route for the POST method to create a todo item
+	$app->post("/todos", function() use ($app){
+		# We get all the POST method variables
+		$postVars = $app->request->post();
+		# We create a new todo resource
+		$todo = ORM::forTable('todos')->create();
+		# We set the passed attributes
+		$todo->task = ucfirst($postVars['task']);
+		# We save the resource into the database
+		$todo->save();
+		//var_dump(ORM::get_query_log());
+		$app->redirect("/todos/new");
+	})
+	->conditions(['status' => '(new|working|done|archived)'])
+	->name('todo.create');
+
 	# defines a route for the GET method
 	$app->get("/todos(/:filter)", function($filter = 'all') use ($app){
 		$todos = ORM::forTable('todos')
