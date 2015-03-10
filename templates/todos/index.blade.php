@@ -13,9 +13,13 @@
 			</div>
 			<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 				<ul class="list-group">
-					@foreach($todos as $todo)
-						@include('todos._item', compact('todo'))
-					@endforeach
+					@if(!empty($todos))
+						@foreach($todos as $todo)
+							@include('todos._item', compact('todo'))
+						@endforeach
+					@else
+						<p>Your todos list is empty, create a new todo item with the side form.</p>
+					@endif
 				</ul>
 			</div>
 			<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">

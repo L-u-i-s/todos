@@ -23,10 +23,14 @@
 	];
 
 	# defines a route for the GET method
-	$app->get("/todos", function() use ($app){
-		$todos = ORM::forTable('todos')->join('lookup', ['todos.status', '=', 'lookup.code'])->where(['lookup.type' => 'todo.status'])->findMany();
+	$app->get("/todos(/:filter)", function($filter = 'all') use ($app){
+		$todos = ORM::forTable('todos')
+			->select(['todos.id', 'todos.task', 'lookup.value'])
+			->join('lookup', ['todos.status', '=', 'lookup.code'])
+			->order_by_desc('todos.id')->findMany();
+
 		$app->render('todos.index', compact('todos', 'app'));
-		//var_dump(ORM::get_query_log(), $todos);
+		//var_dump(ORM::get_query_log());
 	})->name('todos.index');
 
 	# defines a route for the GET method
@@ -39,7 +43,6 @@
 	$app->get("/todos/:id/update/status/:status", function($id, $status) use ($app){
 		# We get the status code firts the status code they passed
 		$status = ORM::forTable('lookup')->where(['type' => 'todo.status', 'value' => $status])->findOne();
-
 		# Then we get the corresponding todo item for the id
 		$todo = ORM::forTable('todos')->findOne($id);
 		# We update its code value		//$todo->status = $status->code;
