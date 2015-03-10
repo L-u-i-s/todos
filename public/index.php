@@ -8,21 +8,21 @@
 	//ORM::configure('return_result_sets', true);
 
 
-	# instantiates a new Slim Application
+	# Instantiates a new Slim Application
 	$app = new \Slim\Slim([
 		#Adds application settings
 		'view' => new \Slim\Views\Blade(),
 		'templates.path' => '../templates',
 	]);
 
-	#setup templates compiled cache
+	# Setup templates compiled cache
 	$view = $app->view();
 	$view->parserOptions = [
 		'debug' => true,
 		'cache' => "../html_cache"
 	];
 
-	# defines a route for the POST method to create a todo item
+	# Defines a Route for the POST method to create a new todo item
 	$app->post("/todos", function() use ($app){
 		# We get all the POST method variables
 		$postVars = $app->request->post();
@@ -38,23 +38,43 @@
 	->conditions(['status' => '(new|working|done|archived)'])
 	->name('todo.create');
 
-	# defines a route for the GET method
+	# Defines a Route for the GET method that fetchs a list of filtered items 
 	$app->get("/todos(/:filter)", function($filter = 'all') use ($app){
+		# We count every item for the diferent statuses
+		$totals['all'] = ORM::forTable('todos')
+			->join('lookup', ['todos.status', '=', 'lookup.code'])
+			->where('lookup.type', 'todo.status')
+			->where_not_equal('lookup.value', 'archived')
+			->count();
+		$totals['new'] = ORM::forTable('todos')->join('lookup', ['todos.status', '=', 'lookup.code'])->where('lookup.value', 'new')->count('status');
+		$totals['working'] = ORM::forTable('todos')->join('lookup', ['todos.status', '=', 'lookup.code'])->where('lookup.value', 'working')->count('status');
+		$totals['done'] = ORM::forTable('todos')->join('lookup', ['todos.status', '=', 'lookup.code'])->where('lookup.value', 'done')->count('status');
+		$totals['archived'] = ORM::forTable('todos')->join('lookup', ['todos.status', '=', 'lookup.code'])->where('lookup.value', 'archived')->count('status');
+		
+		# We get select the columns we need and also get the status translations
 		$todos = ORM::forTable('todos')
 			->select(['todos.id', 'todos.task', 'lookup.value'])
 			->join('lookup', ['todos.status', '=', 'lookup.code'])
+			->where('lookup.type', 'todo.status')
 			->order_by_asc('todos.id');
 
+		# We filter the items that are going to be retrived by their status
 		if($filter == 'all')
 			$todos->where_not_equal('lookup.value', 'archived');
 		else
 			$todos->where('lookup.value', $filter);
 
+		# We actually get the records
 		$todos = $todos->findMany();
 
-		$app->render('todos.index', compact('todos', 'app', 'filter'));
+		# We render the corresponding view and pass the needed data
+		$app->render('todos.index', compact('todos', 'app', 'filter', 'totals'));
 		//var_dump(ORM::get_query_log());
-	})->name('todos.index');
+	})
+	# We set a filter condition; the route will only responde to these filters
+	->conditions(['filter' => '(all|new|working|done|archived)'])
+	# We name our route to by able to create URLs easily
+	->name('todos.index');
 
 	# defines a route for the GET method
 	/*$app->get("/todos/:id", function($id) use ($app){
@@ -73,9 +93,11 @@
 		# We save it into the database
 		$todo->save();
 		//var_dump(ORM::get_query_log());
-		$app->redirect("/todos/".$status);
+		$app->redirect("/todos/$status");
 	})
+	# We set a filter condition; the route will only responde to these filters
 	->conditions(['status' => '(new|working|done|archived)'])
+	# We name our route to by able to create URLs easily
 	->name('todo.update');
 
 	# Actually runs the application

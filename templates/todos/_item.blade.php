@@ -12,25 +12,6 @@
 	<span>{{$todo->task}}</span>
 
 	<span class="pull-right">
-		@if($todo->value == 'new')
-			<a href="{{$app->urlFor('todo.update', ['id' => $todo->id, 'status' => 'working'])}}" role="button" class="btn btn-default btn-xs" title="Set as working">
-				<span class="glyphicon glyphicon-cog"></span>
-			</a>
-		@endif
-		@if($todo->value == 'working')
-			<a href="/todos/{{$todo->id}}/update/status/done" role="button" class="btn btn-default btn-xs" title="Set as Done">
-				<span class="glyphicon glyphicon-ok"></span>
-			</a>
-		@endif
-		@if($todo->value == 'done')
-			<a href="{{$app->urlFor('todo.update', ['id' => $todo->id, 'status' => 'archived'])}}" role="button" class="btn btn-default btn-xs" title="Save it">
-				<span class="glyphicon glyphicon-save"></span>
-			</a>
-		@endif
-		@if($todo->value == 'archived')
-			<a href="{{$app->urlFor('todo.update', ['id' => $todo->id, 'status' => 'archived'])}}" role="button" class="btn btn-default btn-xs" title="Save it">
-				<span class="glyphicon glyphicon-save"></span>
-			</a>
-		@endif
+		@include('todos.item._buttons', [ 'status' => $todo->value])
 	</span>
 </li>
