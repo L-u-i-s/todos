@@ -27,9 +27,16 @@
 		$todos = ORM::forTable('todos')
 			->select(['todos.id', 'todos.task', 'lookup.value'])
 			->join('lookup', ['todos.status', '=', 'lookup.code'])
-			->order_by_desc('todos.id')->findMany();
+			->order_by_asc('todos.id');
 
-		$app->render('todos.index', compact('todos', 'app'));
+		if($filter == 'all')
+			$todos->where_not_equal('lookup.value', 'archived');
+		else
+			$todos->where('lookup.value', $filter);
+
+		$todos = $todos->findMany();
+
+		$app->render('todos.index', compact('todos', 'app', 'filter'));
 		//var_dump(ORM::get_query_log());
 	})->name('todos.index');
 
@@ -42,15 +49,15 @@
 	# defines a route for the GET method
 	$app->get("/todos/:id/update/status/:status", function($id, $status) use ($app){
 		# We get the status code firts the status code they passed
-		$status = ORM::forTable('lookup')->where(['type' => 'todo.status', 'value' => $status])->findOne();
+		$lookup_status = ORM::forTable('lookup')->where(['type' => 'todo.status', 'value' => $status])->findOne();
 		# Then we get the corresponding todo item for the id
 		$todo = ORM::forTable('todos')->findOne($id);
 		# We update its code value		//$todo->status = $status->code;
-		$todo->set('status', $status->code);
+		$todo->set('status', $lookup_status->code);
 		# We save it into the database
 		$todo->save();
 		//var_dump(ORM::get_query_log());
-		$app->redirect('/todos');
+		$app->redirect("/todos/".$status);
 	})
 	->conditions(['status' => '(new|working|done|archived)'])
 	->name('todo.update');
