@@ -46,10 +46,30 @@
 			->where('lookup.type', 'todo.status')
 			->where_not_equal('lookup.value', 'archived')
 			->count();
-		$totals['new'] = ORM::forTable('todos')->join('lookup', ['todos.status', '=', 'lookup.code'])->where('lookup.value', 'new')->count('status');
-		$totals['working'] = ORM::forTable('todos')->join('lookup', ['todos.status', '=', 'lookup.code'])->where('lookup.value', 'working')->count('status');
-		$totals['done'] = ORM::forTable('todos')->join('lookup', ['todos.status', '=', 'lookup.code'])->where('lookup.value', 'done')->count('status');
-		$totals['archived'] = ORM::forTable('todos')->join('lookup', ['todos.status', '=', 'lookup.code'])->where('lookup.value', 'archived')->count('status');
+
+		$totals['new'] = ORM::forTable('todos')
+			->join('lookup', ['todos.status', '=', 'lookup.code'])
+			->where('lookup.type', 'todo.status')
+			->where('lookup.value', 'new')
+			->count('status');
+
+		$totals['working'] = ORM::forTable('todos')
+			->join('lookup', ['todos.status', '=', 'lookup.code'])
+			->where('lookup.type', 'todo.status')
+			->where('lookup.value', 'working')
+			->count('status');
+
+		$totals['done'] = ORM::forTable('todos')
+			->join('lookup', ['todos.status', '=', 'lookup.code'])
+			->where('lookup.type', 'todo.status')
+			->where('lookup.value', 'done')
+			->count('status');
+
+		$totals['archived'] = ORM::forTable('todos')
+			->join('lookup', ['todos.status', '=', 'lookup.code'])
+			->where('lookup.type', 'todo.status')
+			->where('lookup.value', 'archived')
+			->count('status');
 		
 		# We get select the columns we need and also get the status translations
 		$todos = ORM::forTable('todos')
@@ -82,10 +102,12 @@
 		$app->render('todos.show', compact('todo'));
 	});*/
 
-	# defines a route for the GET method
+	# Defines a Route for the GET method that spoofs, the PUT method used to update a resource
 	$app->get("/todos/:id/update/status/:status", function($id, $status) use ($app){
 		# We get the status code firts the status code they passed
-		$lookup_status = ORM::forTable('lookup')->where(['type' => 'todo.status', 'value' => $status])->findOne();
+		$lookup_status = ORM::forTable('lookup')
+			->where(['type' => 'todo.status', 'value' => $status])
+			->findOne();
 		# Then we get the corresponding todo item for the id
 		$todo = ORM::forTable('todos')->findOne($id);
 		# We update its code value		//$todo->status = $status->code;
